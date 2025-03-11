@@ -83,8 +83,6 @@ def main():
                     player.weapon = 1
 
         if score >= 100 and not upgrade_spawned:
-        # Create an Upgrade instance.
-        # If your Upgrade class requires coordinates, pass them in (here using random positions)
             Upgrade(random.randint(0, SCREEN_WIDTH), random.randint(0, SCREEN_HEIGHT))
             upgrade_spawned = True
 
