@@ -1,10 +1,12 @@
 import sys
 import pygame
+import random
 from constants import *
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
-from shots import Shots
+from shots import Shots, Rockets
+from upgrades import Upgrade
 
 
 def main():
@@ -27,15 +29,22 @@ def main():
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
     shots = pygame.sprite.Group()
+    rockets = pygame.sprite.Group()
+    upgrades = pygame.sprite.Group()
 
     Asteroid.containers = (asteroids, updatable, drawable)
     AsteroidField.containers = (updatable)
     Shots.containers = (shots, updatable, drawable)
+    Rockets.containers = (rockets, updatable, drawable)
+    Upgrade.containers = (upgrades, updatable, drawable)
+
 
     asteroidfield = AsteroidField()
 
     Player.containers = (updatable, drawable)
     player = Player(x, y)
+
+    upgrade_spawned = False
 
 
     while True:
@@ -43,6 +52,7 @@ def main():
             if event.type == pygame.QUIT:
                 return
         
+
         updatable.update(dt)
 
         for asteroid in asteroids:
@@ -57,6 +67,26 @@ def main():
                     shot.kill()
                     asteroid.split()
                     score += score_increment
+
+        for asteroid in asteroids:
+            for rocket in rockets:
+                if rocket.collision(asteroid):
+                    rocket.kill()
+                    asteroid.split()
+                    score += score_increment
+
+
+        for shot in shots:
+            for upgrade in upgrades:
+                if shot.collision(upgrade):
+                    upgrade.kill()
+                    player.weapon = 1
+
+        if score >= 100 and not upgrade_spawned:
+        # Create an Upgrade instance.
+        # If your Upgrade class requires coordinates, pass them in (here using random positions)
+            Upgrade(random.randint(0, SCREEN_WIDTH), random.randint(0, SCREEN_HEIGHT))
+            upgrade_spawned = True
 
 
         screen.fill("black")
